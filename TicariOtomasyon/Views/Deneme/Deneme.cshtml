@@ -1,0 +1,42 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="file">
+        <button type="button" id="uploadButton">Upload</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        $(document).ready(function () {
+            $("#uploadButton").click(function () {
+                var formData = new FormData($("#uploadForm")[0]);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/@Url.Content("~/Deneme/Upload")",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        $("#message").text(data);
+                    },
+                    error: function () {
+                        $("#message").text("Error occurred during upload.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

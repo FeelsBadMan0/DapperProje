@@ -1,0 +1,490 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="//cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.13.5/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet" />
+
+
+<style>
+    #uruntable_wrapper .dt-buttons {
+        float: right;
+    }
+</style>
+
+<button class="btn btn-success mb-3 float-right mr-1" style="color:black; font-size:13px;" type="button" data-target="#modal1" data-toggle="modal"><i class="fa-solid fa-user-plus"></i></button>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+
+
+
+<table class="table table-bordered display" id="uruntable" style="width:100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>KAYITKODU</th>
+            <th>URUN</th>
+            <th>STOK</th>
+            <th>KATEGORI</th>
+            <th>GORSEL</th>
+            <th>AKTIF</th>
+            <th>İŞLEMLER</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="modal fade" id="modal1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ürün Ekle</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-group">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="URUN">Ürün Adı</label>
+                            <input type="text" class="form-control" id="URUN" name="URUN" placeholder="Ürün Adı">
+                        </div>
+                        <div class="form-group">
+                            <label for="STOK">Stok Adeti</label>
+                            <input type="text" class="form-control" id="STOK" name="STOK" placeholder="Stok Adeti">
+                        </div>
+                        <div class="form-group">
+                            <label for="KATEGORI">Ürün Kategorisi</label>
+                            <select id="dinamikSelect" name="KATEGORI" class="form-control">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="GORSEL">Ürün Görsel</label>
+                            <input type="file" name="GORSEL" id="GORSEL" />
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="ekle">Ürün Ekle</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"> Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ürün Sil</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Ürünü silmek istediğinize emin misiniz?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="sil">Sil</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"> Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal3">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ürün Bilgileri</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+
+                <form class="form-group">
+                    <div class="card-body">
+                        <input type="hidden" name="ID" id="IDG" />
+                        <div class="form-group">
+                            <label for="URUN">Ürün Adı</label>
+                            <input type="text" class="form-control" id="URUNG" name="URUN" placeholder="Ürün Adı">
+                        </div>
+                        <div class="form-group">
+                            <label for="KATEGORI">Stok Adeti</label>
+                            <input type="text" class="form-control" id="STOKG" name="STOK" placeholder="Stok Adeti">
+                        </div>
+                        <div class="form-group">
+                            <label for="KATEGORI">Ürün Kategorisi</label>
+                            <select id="dinamikSelectG" name="KATEGORI" class="form-control">
+                            </select>
+                        </div>
+
+                    </div>
+                </form>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="guncelle">Ürün Güncelle</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"> Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section script{
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.jqueryui.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+    <script>
+        new DataTable('#uruntable', {
+               ajax: {
+                url: "@Url.Content("~/Urunler/Listele")",
+                type: 'POST',
+                dataSrc: ''
+            },
+                columns: [
+                    { data: 'ID' },
+                    { data: 'KAYITKODU' },
+                    { data: 'URUN' },
+                    { data: 'STOK' },
+                    { data: 'KATEGORI' },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+
+                            return '<img src="/Images/'+row.GORSEL+'" width="80" alt="Alternate Text" />' ;
+                        }
+                    },
+                    {
+                        data: 'AKTIF',
+                        render: function (data) {
+                            if (data == 1) {
+                                return "AKTİF";
+                            }
+                            else {
+                                return "PASİF";
+                            }
+                        }
+
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data,type,row) {
+                            var tmp = '';
+                            tmp += '<button id="modalSil" class="btn btn-danger" data-target="#modal2" data-toggle="modal" data-kayitkodu="' + row.KAYITKODU + '"><i class="fa-solid fa-trash"></i></button>'
+
+                            tmp +='<button id="modalGuncelle" class="btn btn-warning" data-target="#modal3" data-toggle="modal" onclick="UrunGetir(' + row.ID + ')"><i class="fa-solid fa-pencil"></i></button>'
+                            return tmp
+                        }
+                    }
+
+                ],
+                aLengthMenu: [
+                    [10, 25, -1],
+                    [10, 25, "Tümü"]
+                ],
+                iDisplayLength: 10,
+                bSortCellsTop: true,
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json"
+                },
+                dom: '<"top"Bl>rt<"bottom"fip><"clear">',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa-solid fa-copy"></i>',
+                        title: 'İstek Listesi Copy'
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa-solid fa-file-csv"></i>',
+                        title: 'İstek Listesi CSV'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa-solid fa-file-excel"></i>',
+                        title: 'İstek Listesi Excel'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa-solid fa-file-pdf"></i>',
+                        title: 'İstek Listesi PDF '
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fa-solid fa-print"></i>',
+                        title: 'Ürün Listesi Yazdır'
+                    },
+                ],
+                columnDefs: [
+                    {
+                        target: 0,
+                        visible: false,
+                        searchable: false
+                    }
+
+                ],
+                bFilter: false,
+
+            });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '@Url.Content("~/Urunler/SelectList")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var select = $('#dinamikSelect');
+                $.each(data, function (index, option) {
+                    select.append($('<option>').val(option.Value).text(option.Text));
+                });
+            },
+            error: function (error) {
+                console.log(error.statusText);
+            }
+        });
+
+
+         $.ajax({
+            url: '@Url.Content("~/Urunler/SelectList")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var select = $('#dinamikSelectG');
+                $.each(data, function (index, option) {
+                    select.append($('<option>').val(option.Value).text(option.Text));
+                });
+            },
+            error: function (error) {
+                console.log(error.statusText);
+            }
+        });
+    });
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+            $("#ekle").click(function () {
+                var formData = new FormData();
+                const fileInput = document.querySelector('input[type="file"]');
+                const file = fileInput.files[0];
+
+                var form = $('#__AjaxAntiForgeryForm');
+                var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                formData.append("URUN", $("#URUN").val());
+                formData.append("STOK", $("#STOK").val());
+                formData.append("KATEGORI", $("#dinamikSelect").val());
+                formData.append("__RequestVerificationToken", token);
+                formData.append("GORSEL", file, file.name);
+
+                var url = "@Url.Content("~/Urunler/Ekle")";
+
+                AjaxPost(url, formData);
+            });
+        });
+
+        function AjaxPost(url, formData) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (data) {
+                    if (data.status) {
+                        swal("Başarılı!", "Ürün başarıyla eklendi!", "success").then((result) => {
+                            if (result) {
+                                setTimeout(function () {
+                                    window.location.href = "/Urunler/Index";
+                                }, 500);
+                            }
+                            else {
+                                swal("Hata!", "Ürün eklenirken bir hata oluştu!", "error");
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    swal("Hata!", "Ürün eklenirken bir hata oluştu!", "error");
+                    console.log(error.statusText);
+                }
+            });
+        }
+    </script>
+
+    <script>
+        //Modal sürekli ilk baştaki kayit kodunu aldığı için this kullandık
+        $(document).ready(function () {
+
+            $(document).on('click', '#modalSil', function () {
+                var kKodu = $(this).data('kayitkodu');
+                //kayitkodu null dödüğü için aşağıdaki kodu kullandık
+                $('#sil').data('kayitkodu', kKodu);
+            });
+
+
+            $('#sil').on('click', function () {
+
+                var kKodu2 = $(this).data('kayitkodu');
+
+                var form = $('#__AjaxAntiForgeryForm');
+                var token = $('input[name="__RequestVerificationToken"]', form).val();
+                if (kKodu2 != undefined && kKodu2 != null)
+                {
+                    modalSil(kKodu2, token);
+                }
+
+            });
+        });
+
+
+        function modalSil(kKodu2, token) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Urunler/Sil")',
+                data: {
+                    kayitKodu: kKodu2,
+                    __RequestVerificationToken:token
+                },
+                success: function (result) {
+                    if (result.status) {
+                        swal("Başarılı!", "Kategori başarıyla silindi!", "success").then((resultt) => {
+                            if (resultt) {
+                                setTimeout(function () {
+                                    window.location.href = "/Urunler/Index";
+                                }, 500);
+                            }
+                        });
+                    } else {
+                        swal("Hata!", "Kategori silinirken bir hata oluştu!", "error");
+                    }
+
+                },
+                error: function (error) {
+                    console.log(error.statusText);
+                    swal("Hata!", "Kategori silinirken bir hata oluştu!", "error");
+                }
+            });
+
+            }
+
+
+    </script>
+
+    <script>
+        function UrunGetir(id) {
+            $.ajax({
+                type: "GET",
+                url: "/Urunler/Guncelle?ID=" + id,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#IDG").val(data.ID);
+                    $("#dinamikSelectG").val(data.KATEGORI);
+                    $("#URUNG").val(data.URUN);
+                    $("#STOKG").val(data.STOK);
+
+
+
+                }
+            });
+        }
+
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $("#guncelle").click(function (event) {
+                event.preventDefault();
+
+                var ID = $("#IDG").val();
+                var URUN = $("#URUNG").val();
+                var STOK = $("#STOKG").val();
+                var KATEGORI = $("#dinamikSelectG").val();
+
+                var form = $('#__AjaxAntiForgeryForm');
+                var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                var url = "@Url.Content("~/Urunler/Guncelle")"
+                var data = { ID, URUN, STOK, KATEGORI, token };
+
+                if (KATEGORI != null && KATEGORI !="" && ID != 0 && ID !=null &&URUN !=null && URUN !="" && STOK !=null &&STOK !="") {
+                    AjaxUpdate(url, data);
+                }
+                else {
+                    swal("Hata!", "Kategori güncellenirken bir hata oluştu!", "error");
+                }
+
+            });
+        });
+
+        function AjaxUpdate(url, data)
+        {
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                data:
+                {
+                    ID: data.ID,
+                    URUN: data.URUN,
+                    STOK: data.STOK,
+                    KATEGORI: data.KATEGORI,
+                    __RequestVerificationToken: data.token
+                },
+
+                success: function (data) {
+                    if (data.status) {
+                        swal("Başarılı!", "Kategori başarıyla güncellendi!", "success").then((result) => {
+                            if (result) {
+                                setTimeout(function () {
+                                    window.location.href = "/Urunler/Index";
+                                }, 500);
+                            }
+                            else {
+                                swal("Hata!", "Kategori güncellenirken bir hata oluştu!", "error");
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    swal("Hata!", "Kişi güncellenirken bir hata oluştu!", "error");
+                    console.log(error.statusText);
+                }
+            });
+        }
+    </script>
+
+
+}
+
+

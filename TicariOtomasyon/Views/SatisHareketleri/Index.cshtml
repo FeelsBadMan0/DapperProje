@@ -1,0 +1,264 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="//cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.13.5/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet" />
+
+<style>
+    #satishareketleritable_wrapper .dt-buttons {
+        float: right;
+    }
+</style>
+
+<button class="btn btn-success mb-3 float-right mr-1" style="color:black; font-size:13px;" type="button" data-target="#modal1" data-toggle="modal"><i class="fa-solid fa-user-plus"></i></button>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+<table class="table table-bordered display" id="satishareketleritable" style="width:100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>KAYIT KODU</th>
+            <th>ÜRÜN</th>
+            <th>CARİ</th>
+            <th>MIKTAR</th>
+            <th>FİYAT</th>
+            <th>SATIŞ TARİHİ</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="modal fade" id="modal1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Satış Ekle</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-group">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="KATEGORI">Ürün</label>
+                            <select id="URUN" name="URUN" class="form-control">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="KATEGORI">Cari</label>
+                            <select id="CARI" name="CARI" class="form-control">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="MIKTAR">Miktar</label>
+                            <input type="number" class="form-control" id="MIKTAR" name="MIKTAR" placeholder="Satış Miktarı">
+                        </div>
+                        <div class="form-group">
+                            <label for="FIYAT">Satış Fiyatı</label>
+                            <input type="text" class="form-control" id="FIYAT" name="FIYAT" placeholder="Satış Fiyatı">
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="ekle">Satış Ekle</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"> Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section script{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.jqueryui.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+    <script>
+        new DataTable('#satishareketleritable', {
+               ajax: {
+                url: "@Url.Content("~/SatisHareketleri/Listele")",
+                type: 'POST',
+                dataSrc: ''
+            },
+                columns: [
+                    { data: 'ID' },
+                    { data: 'KAYITKODU' },
+                    { data: 'URUN' },
+                    { data: 'CARI' },
+                    { data: 'MIKTAR' },
+                    { data: 'FIYAT' },
+                    {
+                        data: 'SATISTARIHI',
+                        render: DataTable.render.datetime('DD-MM-YYYY')
+                    }
+
+                ],
+                aLengthMenu: [
+                    [10, 25, -1],
+                    [10, 25, "Tümü"]
+                ],
+                iDisplayLength: 10,
+                bSortCellsTop: true,
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json"
+                },
+                dom: '<"top"Bl>rt<"bottom"fip><"clear">',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa-solid fa-copy"></i>',
+                        title: 'İstek Listesi Copy'
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa-solid fa-file-csv"></i>',
+                        title: 'İstek Listesi CSV'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa-solid fa-file-excel"></i>',
+                        title: 'İstek Listesi Excel'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa-solid fa-file-pdf"></i>',
+                        title: 'İstek Listesi PDF '
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fa-solid fa-print"></i>',
+                        title: 'Ürün Listesi Yazdır'
+                    },
+                ],
+                columnDefs: [
+                    {
+                        target: 0,
+                        visible: false,
+                        searchable: false
+                    }
+
+                ],
+                bFilter: false,
+
+            });
+    </script>
+
+
+    <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '@Url.Content("~/SatisHareketleri/UrunGetir")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var select = $('#URUN');
+                $.each(data, function (index, option) {
+                    select.append($('<option>').val(option.Value).text(option.Text));
+                });
+            },
+            error: function (error) {
+                console.log(error.statusText);
+            }
+        });
+
+
+         $.ajax({
+            url: '@Url.Content("~/SatisHareketleri/CariGetir")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var select = $('#CARI');
+                $.each(data, function (index, option) {
+                    select.append($('<option>').val(option.Value).text(option.Text));
+                });
+            },
+            error: function (error) {
+                console.log(error.statusText);
+            }
+        });
+    });
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+            $("#ekle").click(function () {
+                var URUN = $("#URUN").val();
+                var CARI = $("#CARI").val();
+                var MIKTAR = $("#MIKTAR").val();
+                var FIYAT = $("#FIYAT").val();
+
+                var form = $('#__AjaxAntiForgeryForm');
+                var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+
+                var url = "@Url.Content("~/SatisHareketleri/Ekle")";
+                var data = {URUN,CARI,FIYAT,MIKTAR,token}
+
+                if (URUN != null && URUN != "" && CARI != null && CARI != "" && FIYAT != null && FIYAT != 0 && MIKTAR !=0)
+                {
+                    AjaxPost(url, data);
+                }
+
+            });
+        });
+
+        function AjaxPost(url, data) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data:
+                {
+                    URUN:data.URUN,
+                    CARI:data.CARI,
+                    MIKTAR:data.MIKTAR,
+                    FIYAT:data.FIYAT,
+                    __RequestVerificationToken: data.token
+                },
+
+                success: function (data) {
+                    if (data.status) {
+                        swal("Başarılı!", "Satış başarıyla eklendi!", "success").then((result) => {
+                            if (result) {
+                                setTimeout(function () {
+                                    window.location.href = "/SatisHareketleri/Index";
+                                }, 500);
+                            }
+                            else {
+                                swal("Hata!", "Satış eklenirken bir hata oluştu!", "error");
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    swal("Hata!", "Satış eklenirken bir hata oluştu!", "error");
+                    console.log(error.statusText);
+                }
+            });
+        }
+    </script>
+
+    
+
+
+}
